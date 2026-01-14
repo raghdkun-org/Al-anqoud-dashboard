@@ -29,13 +29,16 @@ The B-Dashboard frontend is designed to be **backend-agnostic**. All backend int
 
 ### Current Integration Points
 
-| Feature | Frontend Location | API Endpoint (Suggested) |
-|---------|-------------------|--------------------------|
-| Authentication | `lib/auth/auth.store.ts` | `/api/auth/*` |
-| Themes | `lib/theme/theme.service.ts` | `/api/themes/*` |
-| Dashboard Layouts | `lib/dashboard/store/dashboard.store.ts` | `/api/dashboard/*` |
-| User Preferences | `lib/i18n/`, `lib/theme/` | `/api/user/preferences` |
-| Widget Data | `components/widgets/**` | `/api/widgets/*` |
+| Feature | Frontend Location | API Endpoint (Suggested) | Status |
+|---------|-------------------|--------------------------|--------|
+| Authentication | `lib/auth/auth.store.ts` | `/api/auth/*` | Mock (ready for integration) |
+| Themes | `lib/theme/theme.service.ts` | `/api/themes/*` | Local storage (optional sync) |
+| Dashboard Layouts | `lib/dashboard/store/dashboard.store.ts` | `/api/dashboard/*` | Local storage (optional sync) |
+| User Preferences | `lib/i18n/`, `lib/theme/` | `/api/user/preferences` | Local storage (optional sync) |
+| Widget Data | `components/dashboard/widget-renderer.tsx` | `/api/widgets/*` | Not implemented |
+| Feature Flags | `lib/config/features.config.ts` | - | Environment variables only |
+| Security | `lib/security/` | - | Client-side only |
+| i18n Intelligence | `lib/i18n-intelligence/` | - | Client-side dev tool |
 
 ---
 
@@ -95,7 +98,8 @@ Modify `lib/api/client.ts` to add your backend URL:
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -104,9 +108,20 @@ const apiClient = axios.create({
 
 // Add auth token to requests
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("auth-token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (typeof window !== "undefined") {
+    // Get auth token from localStorage (zustand persist)
+    const authStorage = localStorage.getItem("auth-storage");
+    if (authStorage) {
+      try {
+        const parsed = JSON.parse(authStorage);
+        const token = parsed?.state?.token;
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      } catch {
+        // Invalid JSON, ignore
+      }
+    }
   }
   return config;
 });
@@ -118,7 +133,9 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // Clear auth state and redirect to login
       localStorage.removeItem("auth-storage");
-      window.location.href = "/auth/login";
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth/login";
+      }
     }
     return Promise.reject(error);
   }
@@ -851,48 +868,148 @@ export const wsClient = new WebSocketClient();
 
 ## Quick Start Checklist
 
+### Required Setup
+- [x] Feature flag system implemented
+- [x] Client-side auth store with localStorage persistence
+- [x] Theme system with local storage
+- [x] Dashboard personalization with local storage
+- [x] i18n with next-intl
+- [x] Security monitoring (dev tool)
+- [x] Axios client with interceptors
+
+### Backend Integration (Optional)
 1. [ ] Set `NEXT_PUBLIC_API_URL` in `.env.local`
-2. [ ] Update `lib/api/client.ts` with your API configuration
+2. [ ] Set `NEXT_PUBLIC_APP_URL` for security config
 3. [ ] Implement auth endpoints on backend
-4. [ ] Update auth store to use real API
+4. [ ] Update auth store to use real API (see `lib/api/services/auth.service.ts` example)
 5. [ ] Implement theme sync endpoints (optional)
 6. [ ] Implement dashboard layout sync (optional)
 7. [ ] Implement user preferences endpoint (optional)
 8. [ ] Add widget-specific API endpoints as needed
 9. [ ] Set up WebSocket server for real-time features (optional)
 
+### Production Deployment
+1. [ ] Set `NEXT_PUBLIC_API_URL` to production backend
+2. [ ] Set `NEXT_PUBLIC_APP_URL` to production domain
+3. [ ] Enable `NEXT_PUBLIC_AUTH_COOKIE_SECURE=true`
+4. [ ] Set dev-only features to `false` (or rely on automatic disabling)
+5. [ ] Configure CORS on backend to allow frontend domain
+6. [ ] Review and update CSP headers if needed
+
 ---
 
 ## Environment Variables
 
+All environment variables used in the B-Dashboard application:
+
 ```env
 # .env.local
 
-# Required
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
+# ===================================
+# API Configuration
+# ===================================
+# Required - Base URL for API requests
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
-# Optional
-NEXT_PUBLIC_WS_URL=ws://localhost:8000
+# Optional - WebSocket URL for real-time features
+# NEXT_PUBLIC_WS_URL=ws://localhost:3000
 
-# Auth
-NEXT_PUBLIC_AUTH_COOKIE_NAME=auth-token
-NEXT_PUBLIC_AUTH_COOKIE_SECURE=false  # true in production
+# ===================================
+# App Configuration
+# ===================================
+# Application name displayed in UI
+NEXT_PUBLIC_APP_NAME=Dashboard
 
-# Feature flags
-NEXT_PUBLIC_ENABLE_THEME_SYNC=true
-NEXT_PUBLIC_ENABLE_DASHBOARD_SYNC=true
-NEXT_PUBLIC_ENABLE_REALTIME=false
+# Application URL (used for CORS and security headers)
+# Required in production for security configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# ===================================
+# Feature Flags
+# ===================================
+# Core Features
+NEXT_PUBLIC_FEATURE_LOCALIZATION=true
+NEXT_PUBLIC_FEATURE_DARK_MODE=true
+NEXT_PUBLIC_FEATURE_THEME_SYSTEM=true
+NEXT_PUBLIC_FEATURE_DASHBOARD_PERSONALIZATION=true
+NEXT_PUBLIC_FEATURE_RTL_SUPPORT=true
+
+# Dev Tools (automatically disabled in production)
+NEXT_PUBLIC_FEATURE_I18N_INTELLIGENCE=true
+NEXT_PUBLIC_FEATURE_SECURITY_MONITOR=true
+NEXT_PUBLIC_FEATURE_DEV_TOOLS=true
+
+# UI Components
+NEXT_PUBLIC_FEATURE_USER_MENU=true
+NEXT_PUBLIC_FEATURE_SIDEBAR=true
+NEXT_PUBLIC_FEATURE_BREADCRUMBS=true
+NEXT_PUBLIC_FEATURE_SEARCH=true
+
+# ===================================
+# Security (Optional)
+# ===================================
+# NEXT_PUBLIC_AUTH_COOKIE_NAME=auth-token
+# NEXT_PUBLIC_AUTH_COOKIE_SECURE=false  # Set to true in production
+
+# ===================================
+# Backend Sync (Optional)
+# ===================================
+# Enable backend synchronization features
+# NEXT_PUBLIC_ENABLE_THEME_SYNC=true
+# NEXT_PUBLIC_ENABLE_DASHBOARD_SYNC=true
+# NEXT_PUBLIC_ENABLE_REALTIME=false
 ```
+
+### Environment Variable Reference
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `NEXT_PUBLIC_API_URL` | Yes | `/api` | Base URL for API requests. Points to Next.js API routes in dev, backend server in production. |
+| `NEXT_PUBLIC_APP_URL` | Recommended | - | Full application URL for CORS and security headers. Required for production security. |
+| `NEXT_PUBLIC_APP_NAME` | No | `Dashboard` | Application name shown in UI. |
+| `NEXT_PUBLIC_WS_URL` | No | - | WebSocket URL for real-time features (if implemented). |
+| `NEXT_PUBLIC_AUTH_COOKIE_NAME` | No | `auth-token` | Name of authentication cookie. |
+| `NEXT_PUBLIC_AUTH_COOKIE_SECURE` | No | `false` | Set to `true` in production with HTTPS. |
+| `NEXT_PUBLIC_ENABLE_THEME_SYNC` | No | `false` | Enable theme synchronization with backend. |
+| `NEXT_PUBLIC_ENABLE_DASHBOARD_SYNC` | No | `false` | Enable dashboard layout sync with backend. |
+| `NEXT_PUBLIC_ENABLE_REALTIME` | No | `false` | Enable WebSocket real-time updates. |
+
+**Feature Flags:** All `NEXT_PUBLIC_FEATURE_*` variables override defaults in [features.config.ts](../lib/config/features.config.ts). Set to `"true"` or `"false"` as strings. See [DEVELOPER-GUIDE-FEATURE-FLAGS.md](./DEVELOPER-GUIDE-FEATURE-FLAGS.md) for details.
 
 ---
 
 ## Summary
 
-The B-Dashboard is designed with backend integration in mind. Key points:
+The B-Dashboard is designed with backend integration in mind but **works fully offline-first**:
 
-1. **All API calls go through `lib/api/client.ts`** - centralized interceptors
-2. **Zustand stores handle state** - swap local storage for API calls
-3. **Services abstract backend communication** - easy to mock or switch
-4. **Progressive enhancement** - works offline, syncs when available
+### Current State
+1. **Fully functional without a backend** - All features work with local storage
+2. **Feature flags via environment variables** - 13 configurable features
+3. **Mock auth system** - Ready to swap with real backend
+4. **Security headers** - CSP, CSRF protection configured
+5. **i18n Intelligence** - Dev tool for translation monitoring
+6. **Theme system** - Local with optional backend sync
+7. **Dashboard personalization** - Local with optional backend sync
+
+### Integration Points
+1. **All API calls go through `lib/api/axios-client.ts`** - Centralized interceptors with CSRF token handling
+2. **Zustand stores handle state** - Easy to swap local storage for API calls
+3. **Services abstract backend communication** - See `lib/api/services/` for examples
+4. **Progressive enhancement** - Works offline, syncs when available
+
+### Key Files
+- **API Client:** `lib/api/axios-client.ts`
+- **Auth Store:** `lib/auth/auth.store.ts`
+- **Feature Flags:** `lib/config/features.config.ts` + environment variables
+- **Security Config:** `lib/security/config.ts`
+- **Theme Service:** `lib/theme/theme.service.ts`
+- **Dashboard Store:** `lib/dashboard/store/dashboard.store.ts`
+
+### Next Steps for Backend Integration
+1. Implement backend API endpoints (see sections above)
+2. Update stores to call API services instead of using localStorage
+3. Handle authentication tokens (JWT recommended)
+4. Implement WebSocket for real-time updates (optional)
+5. Set up CORS and security headers on backend
 
 For questions or clarification, refer to the codebase or create an issue.
