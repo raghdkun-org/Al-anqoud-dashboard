@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Breadcrumbs } from "./breadcrumbs";
+import { Feature } from "@/lib/config";
 
 interface TopbarProps {
   onMenuClick?: () => void;
@@ -29,29 +30,35 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <span className="sr-only">Toggle menu</span>
       </Button>
 
-      {/* Breadcrumbs */}
-      <div className="hidden md:block">
-        <Breadcrumbs pathname={pathname} />
-      </div>
+      {/* Breadcrumbs - conditionally rendered */}
+      <Feature name="breadcrumbs">
+        <div className="hidden md:block">
+          <Breadcrumbs pathname={pathname} />
+        </div>
+      </Feature>
 
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Search (stub) */}
-      <div className="hidden w-full max-w-sm md:block">
-        <div className="relative">
-          <Search className="absolute start-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder={t("search")}
-            className="ps-8"
-            disabled
-          />
+      {/* Search (stub) - conditionally rendered */}
+      <Feature name="search">
+        <div className="hidden w-full max-w-sm md:block">
+          <div className="relative">
+            <Search className="absolute start-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder={t("search")}
+              className="ps-8"
+              disabled
+            />
+          </div>
         </div>
-      </div>
+      </Feature>
 
-      {/* Theme toggle */}
-      <ThemeToggle />
+      {/* Theme toggle - conditionally rendered */}
+      <Feature name="darkMode">
+        <ThemeToggle />
+      </Feature>
     </header>
   );
 }

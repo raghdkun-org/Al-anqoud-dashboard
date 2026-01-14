@@ -8,6 +8,7 @@
 - [Core vs Extension Zones](#core-vs-extension-zones)
 - [Do Not Modify (Core Infrastructure)](#do-not-modify-core-infrastructure)
 - [Safe to Modify (Extension Points)](#safe-to-modify-extension-points)
+- [Feature Flags System](#feature-flags-system)
 - [Dashboard Personalization System](#dashboard-personalization-system)
 - [Theme System](#theme-system)
 - [Localization System](#localization-system)
@@ -46,6 +47,7 @@ These files form the foundation and MUST NOT be modified to maintain GitHub sync
 
 | Path | Purpose |
 |------|---------|
+| `lib/config/**` | Feature flags configuration system |
 | `lib/theme/**` | Theme System v2 engine |
 | `lib/i18n/config.ts` | i18n configuration |
 | `lib/i18n/request.ts` | Server-side i18n |
@@ -66,6 +68,14 @@ These files form the foundation and MUST NOT be modified to maintain GitHub sync
 | `app/[locale]/(auth)/layout.tsx` | Auth layout wrapper |
 | `proxy.ts` | Routing proxy (formerly middleware) |
 | `i18n/**` | next-intl configuration |
+
+### 🟡 Configurable Zone (EDIT CONFIG ONLY)
+
+These files can be configured but the structure should not change:
+
+| Path | Purpose |
+|------|---------|
+| `lib/config/features.config.ts` | Enable/disable features (edit `enabled` values) |
 
 ### 🟢 Extension Zone (SAFE TO MODIFY)
 
@@ -259,6 +269,51 @@ export function MyCustomChart({ widget, title }: MyCustomChartProps) {
   );
 }
 ```
+
+---
+
+## Feature Flags System
+
+The feature flags system allows developers to enable/disable features without code changes.
+
+### Quick Reference
+
+```tsx
+import { useFeature, Feature } from '@/lib/config';
+
+// Check feature in component
+const isDarkModeEnabled = useFeature('darkMode');
+
+// Conditional rendering
+<Feature name="darkMode">
+  <ThemeToggle />
+</Feature>
+```
+
+### Disabling a Feature
+
+Edit `lib/config/features.config.ts`:
+
+```ts
+darkMode: {
+  enabled: false, // Change to disable
+  // ...
+}
+```
+
+### Available Features
+
+| Feature ID | Description |
+|------------|-------------|
+| `localization` | Multi-language support (i18n) |
+| `darkMode` | Light/dark theme toggle |
+| `themeSystem` | Custom theme system v2 |
+| `dashboardPersonalization` | Drag-drop widgets |
+| `devTools` | Dev tools section |
+| `i18nIntelligence` | Translation issue detection |
+| `securityMonitor` | Security audit tool |
+
+**Full documentation:** See [DEVELOPER-GUIDE-FEATURE-FLAGS.md](./DEVELOPER-GUIDE-FEATURE-FLAGS.md)
 
 ---
 

@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import { ThemeSyncProvider } from "@/components/providers/theme-sync-provider";
-import { I18nClientProvider } from "@/components/providers/i18n-client-provider";
+import { FeatureProviders } from "@/components/providers/feature-providers";
 import { Toaster } from "@/components/ui/sonner";
 import { locales, localeDirections, type Locale } from "@/lib/i18n/config";
 import { createFOUCPreventionScript } from "@/lib/theme";
+import { isFeatureEnabled } from "@/lib/config";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -57,8 +56,13 @@ export default async function LocaleLayout({ children, params }: Props) {
   const dir = localeDirections[locale as Locale];
   const isRtl = dir === "rtl";
 
+  // Check if RTL support is enabled
+  const rtlEnabled = isFeatureEnabled("rtlSupport");
+  const effectiveDir = rtlEnabled ? dir : "ltr";
+  const effectiveIsRtl = rtlEnabled && isRtl;
+
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
+    <html lang={locale} dir={effectiveDir} suppressHydrationWarning>
       <head>
         {/* Theme FOUC prevention script - runs before React hydration */}
         <script
@@ -66,21 +70,12 @@ export default async function LocaleLayout({ children, params }: Props) {
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} ${isRtl ? "font-(family-name:--font-noto-arabic)" : ""} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} ${effectiveIsRtl ? "font-(family-name:--font-noto-arabic)" : ""} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ThemeSyncProvider>
-            <I18nClientProvider messages={messages} locale={locale}>
-              {children}
-              <Toaster />
-            </I18nClientProvider>
-          </ThemeSyncProvider>
-        </ThemeProvider>
+        <FeatureProviders messages={messages} locale={locale}>
+          {children}
+          <Toaster />
+        </FeatureProviders>
       </body>
     </html>
   );

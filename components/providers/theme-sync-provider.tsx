@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useThemeStore } from "@/lib/theme";
 import { applyTheme } from "@/lib/theme/apply-theme";
+import { isFeatureEnabled } from "@/lib/config";
 
 /**
  * This component synchronizes our custom theme system with next-themes.
@@ -16,6 +17,10 @@ export function ThemeSyncProvider({ children }: { children: React.ReactNode }) {
 
   // Re-apply theme whenever the color mode changes
   useEffect(() => {
+    // Check if theme system feature is enabled
+    const themeSystemEnabled = isFeatureEnabled("themeSystem");
+    if (!themeSystemEnabled) return;
+
     if (activeTheme && resolvedTheme) {
       const mode = resolvedTheme === "dark" ? "dark" : "light";
       applyTheme(activeTheme, mode);
@@ -24,6 +29,10 @@ export function ThemeSyncProvider({ children }: { children: React.ReactNode }) {
 
   // Also listen for class changes on documentElement (for immediate response)
   useEffect(() => {
+    // Check if theme system feature is enabled
+    const themeSystemEnabled = isFeatureEnabled("themeSystem");
+    if (!themeSystemEnabled) return;
+
     if (typeof window === "undefined") return;
 
     const observer = new MutationObserver((mutations) => {

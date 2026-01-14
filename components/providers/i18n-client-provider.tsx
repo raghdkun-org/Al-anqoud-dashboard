@@ -12,6 +12,7 @@ import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useI18nIntelligenceStore } from "@/lib/i18n-intelligence";
 import { createMissingTranslationIssue } from "@/lib/i18n-intelligence/analyzers/issue-factories";
 import type { SupportedLocale } from "@/lib/i18n-intelligence/types";
+import { isFeatureEnabled } from "@/lib/config";
 
 interface I18nClientProviderProps {
   children: ReactNode;
@@ -38,8 +39,15 @@ export function I18nClientProvider({
   // Handle translation errors
   const handleError = useCallback(
     (error: { code: IntlErrorCode; message: string }) => {
+      // Check if i18n intelligence feature is enabled
+      const i18nIntelligenceEnabled = isFeatureEnabled("i18nIntelligence");
+
       // Only process in development and when detection is enabled
-      if (process.env.NODE_ENV !== "development" || !mounted) {
+      if (
+        process.env.NODE_ENV !== "development" ||
+        !mounted ||
+        !i18nIntelligenceEnabled
+      ) {
         return;
       }
 

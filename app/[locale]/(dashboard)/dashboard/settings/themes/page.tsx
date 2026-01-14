@@ -29,11 +29,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, Download, Upload, Trash2, Plus, Palette, Copy } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Check, Download, Upload, Trash2, Plus, Palette, Copy, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
+import { useFeature } from "@/lib/config";
 
 export default function ThemesPage() {
   const t = useTranslations("settings");
+  const themeSystemEnabled = useFeature("themeSystem");
   const {
     themes,
     activeThemeId,
@@ -51,6 +55,26 @@ export default function ThemesPage() {
   const [exportedCss, setExportedCss] = useState("");
   const [selectedExportTheme, setSelectedExportTheme] = useState<Theme | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Show disabled message if theme system feature is off
+  if (!themeSystemEnabled) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium">{t("themes.title")}</h3>
+          <p className="text-sm text-muted-foreground">{t("themes.description")}</p>
+        </div>
+        <Separator />
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Feature Disabled</AlertTitle>
+          <AlertDescription>
+            The theme system feature is currently disabled. Contact your administrator to enable it.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   const handleImport = () => {
     setImportError(null);

@@ -11,7 +11,8 @@ import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Languages, Bug, Settings, BarChart3, FlaskConical, FileCode } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Languages, Bug, Settings, BarChart3, FlaskConical, FileCode, AlertCircle } from "lucide-react";
 import {
   HealthScoreCard,
   IssueSummaryGrid,
@@ -21,6 +22,7 @@ import {
   HardcodedStringsPanel,
 } from "@/components/i18n-intelligence";
 import { useI18nIntelligenceStore } from "@/lib/i18n-intelligence";
+import { useFeature } from "@/lib/config";
 
 export function I18nIntelligenceDashboard() {
   const t = useTranslations("devTools");
@@ -33,12 +35,37 @@ export function I18nIntelligenceDashboard() {
   const totalIssues = useI18nIntelligenceStore((s) =>
     Object.keys(s.issues).length
   );
+  const i18nIntelligenceEnabled = useFeature("i18nIntelligence");
 
   // Enable detection on mount
   useEffect(() => {
     toggleDetection(true);
     recalculateHealth();
   }, []);
+
+  // Show disabled message if i18n intelligence feature is off
+  if (!i18nIntelligenceEnabled) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+            <Languages className="h-6 w-6" />
+            i18n Intelligence
+          </h1>
+          <p className="text-muted-foreground">
+            Real-time translation issue detection and monitoring
+          </p>
+        </div>
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Feature Disabled</AlertTitle>
+          <AlertDescription>
+            The i18n Intelligence feature is currently disabled. Contact your administrator to enable it.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

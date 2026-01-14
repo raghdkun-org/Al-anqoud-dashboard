@@ -13,7 +13,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { Check, Monitor, Moon, Sun, AlertCircle } from "lucide-react";
+import { useFeature } from "@/lib/config";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Hydration-safe hook for client-side only rendering
 function useIsMounted() {
@@ -28,6 +30,7 @@ export default function AppearancePage() {
   const t = useTranslations("settings.appearance");
   const { theme, setTheme } = useTheme();
   const isMounted = useIsMounted();
+  const darkModeEnabled = useFeature("darkMode");
 
   const themes = [
     {
@@ -52,6 +55,26 @@ export default function AppearancePage() {
 
   if (!isMounted) {
     return null;
+  }
+
+  // Show disabled message if dark mode feature is off
+  if (!darkModeEnabled) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium">{t("title")}</h3>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
+        </div>
+        <Separator />
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Feature Disabled</AlertTitle>
+          <AlertDescription>
+            The dark mode feature is currently disabled. Contact your administrator to enable it.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (

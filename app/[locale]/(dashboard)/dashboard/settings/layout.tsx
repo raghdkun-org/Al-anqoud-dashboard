@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/page-header";
 import { Separator } from "@/components/ui/separator";
+import { useFeature } from "@/lib/config";
 
 export default function SettingsLayout({
   children,
@@ -17,13 +18,19 @@ export default function SettingsLayout({
   const params = useParams();
   const locale = params?.locale as string || "en";
 
+  // Check feature flags for settings tabs
+  const darkModeEnabled = useFeature("darkMode");
+  const themeSystemEnabled = useFeature("themeSystem");
+  const localizationEnabled = useFeature("localization");
+
+  // Build settings tabs based on enabled features
   const settingsTabs = [
-    { value: "profile", label: t("tabs.profile"), href: `/${locale}/dashboard/settings/profile` },
-    { value: "account", label: t("tabs.account"), href: `/${locale}/dashboard/settings/account` },
-    { value: "appearance", label: t("tabs.appearance"), href: `/${locale}/dashboard/settings/appearance` },
-    { value: "preferences", label: t("tabs.preferences"), href: `/${locale}/dashboard/settings/preferences` },
-    { value: "themes", label: t("tabs.themes"), href: `/${locale}/dashboard/settings/themes` },
-  ];
+    { value: "profile", label: t("tabs.profile"), href: `/${locale}/dashboard/settings/profile`, enabled: true },
+    { value: "account", label: t("tabs.account"), href: `/${locale}/dashboard/settings/account`, enabled: true },
+    { value: "appearance", label: t("tabs.appearance"), href: `/${locale}/dashboard/settings/appearance`, enabled: darkModeEnabled },
+    { value: "preferences", label: t("tabs.preferences"), href: `/${locale}/dashboard/settings/preferences`, enabled: localizationEnabled },
+    { value: "themes", label: t("tabs.themes"), href: `/${locale}/dashboard/settings/themes`, enabled: themeSystemEnabled },
+  ].filter(tab => tab.enabled);
 
   return (
     <div className="space-y-6">

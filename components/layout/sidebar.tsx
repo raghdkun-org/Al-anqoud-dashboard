@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { UserMenu } from "./user-menu";
 import { useUIStore } from "@/lib/store/ui.store";
+import { useFeature, Feature } from "@/lib/config";
 
 interface SidebarProps {
   collapsed?: boolean;
@@ -31,6 +32,11 @@ export function Sidebar({ collapsed = false, onNavigate }: SidebarProps) {
   const isRtl = locale === "ar";
   const t = useTranslations("nav");
   const { toggleSidebar } = useUIStore();
+
+  // Check feature flags
+  const devToolsEnabled = useFeature("devTools");
+  const i18nIntelligenceEnabled = useFeature("i18nIntelligence");
+  const securityMonitorEnabled = useFeature("securityMonitor");
 
   const navItems = [
     {
@@ -50,22 +56,29 @@ export function Sidebar({ collapsed = false, onNavigate }: SidebarProps) {
     },
   ];
 
-  // Dev tools navigation (only visible in development)
-  const devToolsItems =
-    process.env.NODE_ENV === "development"
-      ? [
-          {
-            title: t("devTools.i18n"),
-            href: `/${locale}/dashboard/dev-tools/i18n`,
-            icon: Languages,
-          },
-          {
-            title: t("devTools.security"),
-            href: `/${locale}/dashboard/dev-tools/security`,
-            icon: Shield,
-          },
-        ]
-      : [];
+  // Dev tools navigation (controlled by feature flags)
+  const devToolsItems: Array<{
+    title: string;
+    href: string;
+    icon: typeof Languages;
+  }> = [];
+
+  if (devToolsEnabled && process.env.NODE_ENV === "development") {
+    if (i18nIntelligenceEnabled) {
+      devToolsItems.push({
+        title: t("devTools.i18n"),
+        href: `/${locale}/dashboard/dev-tools/i18n`,
+        icon: Languages,
+      });
+    }
+    if (securityMonitorEnabled) {
+      devToolsItems.push({
+        title: t("devTools.security"),
+        href: `/${locale}/dashboard/dev-tools/security`,
+        icon: Shield,
+      });
+    }
+  }
 
   // For RTL, swap chevron icons
   const CollapseIcon = collapsed
@@ -166,10 +179,12 @@ export function Sidebar({ collapsed = false, onNavigate }: SidebarProps) {
 
       <Separator />
 
-      {/* User Menu */}
-      <div className={cn("p-2", collapsed && "flex justify-center")}>
-        <UserMenu collapsed={collapsed} />
-      </div>
+      {/* User Menu - conditionally rendered */}
+      <Feature name="userMenu">
+        <div className={cn("p-2", collapsed && "flex justify-center")}>
+          <UserMenu collapsed={collapsed} />
+        </div>
+      </Feature>
 
       {/* Collapse Toggle (desktop only) */}
       <div className="hidden border-t p-2 md:block">

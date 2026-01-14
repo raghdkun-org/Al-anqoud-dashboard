@@ -20,9 +20,18 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbs: BreadcrumbItem[] = [];
 
+  // Skip the first segment if it's a locale (en, ar, etc.)
+  const locales = ["en", "ar"];
+  const startIndex = locales.includes(segments[0]) ? 1 : 0;
+
   let currentPath = "";
-  for (const segment of segments) {
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i];
     currentPath += `/${segment}`;
+    
+    // Skip locale segment in breadcrumbs
+    if (i < startIndex) continue;
+
     breadcrumbs.push({
       label: segment.charAt(0).toUpperCase() + segment.slice(1),
       href: currentPath,

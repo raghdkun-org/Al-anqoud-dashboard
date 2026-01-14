@@ -19,7 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { locales, localeNames, type Locale } from "@/lib/i18n/config";
+import { useFeature } from "@/lib/config";
 
 export default function PreferencesPage() {
   const t = useTranslations("settings.preferences");
@@ -27,6 +30,7 @@ export default function PreferencesPage() {
   const params = useParams();
   const pathname = usePathname();
   const currentLocale = (params?.locale as Locale) || "en";
+  const localizationEnabled = useFeature("localization");
 
   const handleLocaleChange = (newLocale: Locale) => {
     // Set cookie for middleware
@@ -42,6 +46,28 @@ export default function PreferencesPage() {
     router.push(newPath);
     router.refresh();
   };
+
+  // Show disabled message if localization feature is off
+  if (!localizationEnabled) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium">{t("title")}</h3>
+          <p className="text-sm text-muted-foreground">
+            {t("description")}
+          </p>
+        </div>
+        <Separator />
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Feature Disabled</AlertTitle>
+          <AlertDescription>
+            The localization feature is currently disabled. Contact your administrator to enable it.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
