@@ -1,8 +1,8 @@
 # i18n Intelligence System - Implementation Summary
 
-**Version:** 1.1.0  
-**Date:** 2026-01-13  
-**Status:** Phase 1 Complete, Phase 2 Hardcoded Detection Complete
+**Version:** 1.2.0  
+**Date:** 2026-01-14  
+**Status:** Phase 1 Complete, Phase 2 Complete (ESLint Integrated)
 
 ---
 
@@ -40,6 +40,14 @@ The i18n Intelligence system provides real-time translation issue detection and 
 - Hardcoded string examples for future testing
 
 ### Phase 2: Hardcoded String Detection ✅
+
+#### ESLint Integration (NEW - v1.2.0)
+- **Integrated into `eslint.config.mjs`** - Warnings appear in editor & terminal
+- Rule: `@b-dashboard/i18n-intelligence/no-hardcoded-strings`
+- Configured as `warn` to avoid blocking development
+- Automatic exclusions:
+  - `test-detection/**` - Test files with intentional hardcoded strings
+  - `components/ui/**` - Base UI library components
 
 #### Static Analyzer
 - **ESLint Plugin** (`lib/i18n-intelligence/eslint/plugin.ts`)

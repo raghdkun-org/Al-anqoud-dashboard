@@ -1175,28 +1175,45 @@ export { TranslationEventCollector };
 
 ## Implementation Checklist
 
-### Phase 1: Core Detection (MVP)
+### Phase 1: Core Detection (MVP) ✅
 
-- [ ] Implement `onError` and `getMessageFallback` in next-intl config
-- [ ] Create `TranslationEventCollector` class
-- [ ] Create `useTranslationsWithTracking` wrapper hook
-- [ ] Set up Zustand store for issue tracking
-- [ ] Implement `analyzeMissingKeys` for build-time check
+- [x] Implement `onError` and `getMessageFallback` in next-intl config
+- [x] Create `TranslationEventCollector` class
+- [x] Create `useTranslationsWithTracking` wrapper hook
+- [x] Set up Zustand store for issue tracking
+- [x] Implement `analyzeMissingKeys` for build-time check
 
-### Phase 2: Enhanced Analysis
+### Phase 2: Enhanced Analysis ✅
 
-- [ ] Implement hardcoded string analyzer (static)
-- [ ] Implement runtime hardcoded detector (MutationObserver)
-- [ ] Implement RTL layout analyzer
-- [ ] Implement severity scoring system
-- [ ] Add health score calculation
+- [x] Implement hardcoded string analyzer (static)
+- [x] Implement runtime hardcoded detector (MutationObserver)
+- [x] Implement RTL layout analyzer
+- [x] Implement severity scoring system
+- [x] Add health score calculation
 
-### Phase 3: Developer Tools
+### Phase 3: Developer Tools ✅
 
-- [ ] Create CLI command for full analysis
-- [ ] Add ESLint plugin for hardcoded strings
-- [ ] Create VS Code extension integration
-- [ ] Add CI/CD integration hooks
+- [x] Create CLI command for full analysis (`pnpm analyze:i18n`)
+- [x] Add ESLint plugin for hardcoded strings (integrated in `eslint.config.mjs`)
+- [ ] Create VS Code extension integration (optional future)
+- [ ] Add CI/CD integration hooks (optional future)
+
+---
+
+## ESLint Integration
+
+The ESLint plugin is now integrated into the project. Hardcoded strings are detected:
+- In the editor (VS Code Problems panel)
+- When running `pnpm lint`
+- In CI/CD pipelines
+
+**Configuration:**
+```javascript
+// eslint.config.mjs
+// Rule: @b-dashboard/i18n-intelligence/no-hardcoded-strings
+// Level: warn
+// Excluded: test-detection/**, components/ui/**
+```
 
 ---
 

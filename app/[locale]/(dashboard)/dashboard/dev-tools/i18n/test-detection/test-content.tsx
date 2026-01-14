@@ -150,9 +150,14 @@ export function TestDetectionContent() {
           <CardContent className="space-y-4">
             <p className="text-lg">{hardcodedTitle}</p>
             <Button variant="secondary">{hardcodedButton}</Button>
-            <p className="text-xs text-muted-foreground">
-              Hardcoded strings will be detected by ESLint rules (Phase 2)
-            </p>
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p>
+                Hardcoded strings are detected by the CLI analyzer.
+              </p>
+              <code className="block bg-muted p-2 rounded text-xs">
+                pnpm analyze:i18n
+              </code>
+            </div>
           </CardContent>
         </Card>
 

@@ -46,7 +46,8 @@
     "collapse": "Collapse",
     "devTools": {
       "title": "Dev Tools",
-      "i18n": "i18n Intelligence"
+      "i18n": "i18n Intelligence",
+      "security": "Security Monitor"
     },
     "breadcrumb": "Breadcrumb"
   },
@@ -62,6 +63,7 @@
     "devTools": "Dev Tools",
     "dev-tools": "Dev Tools",
     "i18n": "i18n Intelligence",
+    "security": "Security Monitor",
     "test-detection": "Test Detection",
     "en": "English",
     "ar": "Arabic"
@@ -71,7 +73,9 @@
       "title": "Welcome back",
       "description": "Enter your credentials to access your account",
       "email": "Email",
+      "emailPlaceholder": "you@example.com",
       "password": "Password",
+      "passwordPlaceholder": "Enter your password",
       "forgotPassword": "Forgot password?",
       "signIn": "Sign in",
       "noAccount": "Don't have an account?",
@@ -82,10 +86,14 @@
     "register": {
       "title": "Create an account",
       "description": "Enter your details to get started",
-      "name": "Name",
+      "name": "Full Name",
+      "namePlaceholder": "John Doe",
       "email": "Email",
+      "emailPlaceholder": "you@example.com",
       "password": "Password",
+      "passwordPlaceholder": "Create a password",
       "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
       "submit": "Create account",
       "haveAccount": "Already have an account?",
       "signIn": "Sign in"
@@ -94,6 +102,7 @@
       "title": "Reset your password",
       "description": "Enter your email and we'll send you a reset link",
       "email": "Email",
+      "emailPlaceholder": "you@example.com",
       "submit": "Send reset link",
       "backToLogin": "Back to login",
       "checkEmail": "Check your email",
@@ -292,6 +301,36 @@
   },
   "devTools": {
     "title": "Developer Tools",
+    "security": {
+      "title": "Security Monitor",
+      "description": "Real-time security auditing and monitoring",
+      "badge": "Development Tool",
+      "securityScore": "Security Score",
+      "lastAudit": "Last audit",
+      "export": "Export",
+      "exportAuditReport": "Export Audit Report",
+      "exportAsJson": "Export as JSON",
+      "exportAsCsv": "Export as CSV",
+      "exportAsMarkdown": "Export as Markdown",
+      "copyToClipboard": "Copy to Clipboard",
+      "runAudit": "Run Audit",
+      "running": "Running...",
+      "securityChecks": "Security Checks",
+      "securityEvents": "Security Events",
+      "passed": "Passed",
+      "warning": "Warning",
+      "failed": "Failed",
+      "skipped": "Skipped",
+      "recentSecurityEvents": "Recent Security Events",
+      "securityEventsDescription": "Security-related events captured during this session",
+      "noSecurityEvents": "No security events recorded",
+      "eventsWillAppear": "Events will appear here when security-relevant actions occur",
+      "viewAllEvents": "View All Events",
+      "exportEvents": "Export Events",
+      "downloadJson": "Download JSON",
+      "downloadCsv": "Download CSV",
+      "downloadMarkdown": "Download Markdown"
+    },
     "i18n": {
       "title": "i18n Intelligence",
       "description": "Real-time translation issue detection and monitoring",

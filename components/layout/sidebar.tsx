@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Languages,
   Wrench,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,11 @@ export function Sidebar({ collapsed = false, onNavigate }: SidebarProps) {
             title: t("devTools.i18n"),
             href: `/${locale}/dashboard/dev-tools/i18n`,
             icon: Languages,
+          },
+          {
+            title: t("devTools.security"),
+            href: `/${locale}/dashboard/dev-tools/security`,
+            icon: Shield,
           },
         ]
       : [];

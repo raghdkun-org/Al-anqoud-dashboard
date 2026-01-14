@@ -48,13 +48,13 @@ This document tracks all issues found during the Phase 1 audit and their resolut
 - `next-intl` plugin configured in next.config.ts pointing to `./i18n/request.ts`
 - `./i18n/request.ts` file does not exist
 - `app/[locale]/` folder structure exists but pages are empty
-- No middleware.ts for locale routing
+- No proxy.ts for locale routing
 - No locale JSON files exist (`lib/i18n/locales/` is empty)
 **Fix:** Complete i18n implementation with:
 - Created `i18n/request.ts` 
 - Created `lib/i18n/config.ts` with locales configuration
 - Created `lib/i18n/locales/en.json` and `lib/i18n/locales/ar.json`
-- Created `middleware.ts` for locale routing
+- Created `proxy.ts` for locale routing (Next.js 16 uses proxy instead of middleware)
 - Populated all `[locale]` pages with translations
 
 ---
@@ -71,10 +71,10 @@ This document tracks all issues found during the Phase 1 audit and their resolut
 **Issue:** Stub folders exist but pages are not implemented.
 **Fix:** Populated with fully locale-aware pages including login, register, forgot-password, dashboard, users, settings.
 
-### 8. ✅ Missing middleware.ts
+### 8. ✅ Missing proxy.ts (formerly middleware.ts)
 **Location:** Root directory
-**Issue:** No middleware for locale routing/detection.
-**Fix:** Created middleware.ts with next-intl integration and locale detection.
+**Issue:** No proxy for locale routing/detection.
+**Fix:** Created proxy.ts with next-intl integration and locale detection. (Note: Next.js 16 renamed middleware.ts to proxy.ts)
 
 ---
 
@@ -143,6 +143,27 @@ This document tracks all issues found during the Phase 1 audit and their resolut
 | Structural Issues | 2 | ✅ 2 |
 | UI/Layout Issues | 2 | ✅ 2 |
 | Missing Features | 4 | ✅ 4 |
-| **Total** | **15** | **✅ 15** |
+| API Issues | 1 | ✅ 1 |
+| **Total** | **16** | **✅ 16** |
 
-All issues have been addressed during Phase 2 implementation.
+All issues have been addressed.
+
+---
+
+## Known Technical Debt
+
+### Legacy Non-Localized Routes
+**Location:** `app/(auth)/` and `app/(dashboard)/`
+**Status:** 📋 Technical Debt (Low Priority)
+**Description:** 
+The non-localized route structure under `app/(auth)/` and `app/(dashboard)/` still exists alongside the localized `app/[locale]/` structure. These legacy routes:
+- Use hardcoded English strings instead of translations
+- Are not actively used (root `/` redirects to `/{locale}`)
+- Serve as fallback/reference for the localized implementations
+
+**Recommendation:** Consider removing these routes in a future cleanup to reduce code duplication. The proxy.ts handles all routing to localized paths, so these routes are effectively unreachable in normal usage.
+
+### API Route Stubs
+**Location:** `app/api/themes/`
+**Status:** 📋 Intentional Stubs
+**Description:** Theme API routes are stubs that return mock data. They are designed to be replaced with actual backend integration when available.

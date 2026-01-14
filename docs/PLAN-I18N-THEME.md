@@ -367,7 +367,7 @@ b-dashboard/
 │       ├── apply-theme.ts            # NEW: Apply theme utility
 │       ├── theme.service.ts          # NEW: Backend service
 │       └── default-theme.ts          # NEW: Default theme
-├── middleware.ts                     # NEW: i18n middleware
+├── proxy.ts                          # i18n proxy (Next.js 16 convention)
 └── components/
     ├── layout/                       # Updated for RTL
     └── shared/

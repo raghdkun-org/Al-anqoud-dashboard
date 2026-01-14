@@ -173,7 +173,7 @@ app/
 ## Implementation Tasks
 
 1. Create `i18n/request.ts` configuration
-2. Create middleware.ts for locale routing
+2. Create proxy.ts for locale routing (Next.js 16 uses proxy instead of middleware)
 3. Create translation JSON files
 4. Migrate pages to `[locale]` structure
 5. Update all hardcoded strings to use `t()`

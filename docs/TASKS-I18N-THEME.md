@@ -31,7 +31,7 @@
 ### Task 1.1: Create i18n Configuration
 - [x] Create `lib/i18n/config.ts` with locale settings
 - [x] Create `i18n/request.ts` for next-intl (fix missing file error)
-- [x] Create `middleware.ts` for locale routing
+- [x] Create `proxy.ts` for locale routing (Next.js 16 renamed middleware to proxy)
 
 ### Task 1.2: Create Translation Files
 - [x] Create `lib/i18n/locales/en.json` with all translations

@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@example.com"
+              placeholder={t("emailPlaceholder")}
               disabled={isLoading}
               autoComplete="email"
             />

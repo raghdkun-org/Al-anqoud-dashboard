@@ -1,8 +1,8 @@
 # B-Dashboard Developer Tools Roadmap
 
-**Version:** 1.0.0  
-**Date:** 2026-01-13  
-**Status:** Planning
+**Version:** 1.1.0  
+**Date:** 2026-01-14  
+**Status:** Active Development
 
 ---
 
@@ -14,7 +14,7 @@ This document outlines potential developer tools that can be implemented to enha
 
 ## Current Tools
 
-### ✅ i18n Intelligence (Implemented)
+### ✅ i18n Intelligence (Implemented - v1.2.0)
 **Route:** `/dashboard/dev-tools/i18n`
 
 Real-time translation issue detection and monitoring system.
@@ -22,10 +22,32 @@ Real-time translation issue detection and monitoring system.
 **Features:**
 - Missing translation detection
 - Fallback usage tracking
-- Hardcoded string detection (CLI-based)
+- **Hardcoded string detection via ESLint** (integrated into editor & `pnpm lint`)
+- CLI analyzer: `pnpm analyze:i18n`
 - Health score dashboard
 - Issue export (JSON, CSV, Markdown)
 - Per-locale health metrics
+- RTL-compatible UI (shadcn fixes applied)
+
+**ESLint Integration:**
+```javascript
+// eslint.config.mjs
+// Rule: @b-dashboard/i18n-intelligence/no-hardcoded-strings
+// Level: warn (does not block development)
+// Excluded: test-detection/**, components/ui/**
+```
+
+### ✅ Security Monitor (Implemented)
+**Route:** `/dashboard/dev-tools/security`
+
+Real-time security auditing and monitoring for development.
+
+**Features:**
+- Security score dashboard
+- Security check categories (Authentication, Authorization, Data, Network, etc.)
+- Real-time security event capture
+- Export reports (JSON, CSV, Markdown)
+- Fully i18n-compatible with RTL support
 
 ---
 

@@ -284,12 +284,12 @@ export default function Home() {
 - Redirects to login if not authenticated
 - Simple, works for most cases
 
-### Production Enhancement: Middleware
+### Production Enhancement: Proxy
 
-For better security, add Next.js middleware:
+For better security, add Next.js proxy (formerly middleware in Next.js 15 and earlier):
 
 ```typescript
-// middleware.ts
+// proxy.ts (Next.js 16+)
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 

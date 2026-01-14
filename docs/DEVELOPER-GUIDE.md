@@ -64,7 +64,7 @@ These files form the foundation and MUST NOT be modified to maintain GitHub sync
 | `components/dashboard/skeletons/**` | Skeleton loading components |
 | `app/[locale]/(dashboard)/layout.tsx` | Dashboard layout wrapper |
 | `app/[locale]/(auth)/layout.tsx` | Auth layout wrapper |
-| `middleware.ts` | Routing middleware |
+| `proxy.ts` | Routing proxy (formerly middleware) |
 | `i18n/**` | next-intl configuration |
 
 ### 🟢 Extension Zone (SAFE TO MODIFY)
@@ -385,25 +385,42 @@ i18n Intelligence is a developer tool for detecting and monitoring translation i
 - **Real-time Detection**: Intercepts missing translation keys as they occur
 - **Health Score Dashboard**: Overall translation coverage metrics
 - **Issue Tracking**: Track missing keys, fallback usage, RTL issues
-- **Hardcoded String Detection**: CLI analyzer + ESLint plugin
+- **Hardcoded String Detection**: ESLint plugin + CLI analyzer
 - **Export Reports**: Export issues as JSON, CSV, or Markdown
+- **RTL Support**: Full RTL layout compatibility
 
-### Running the Hardcoded String Analyzer
+### ESLint Integration (v1.2.0)
+
+The i18n Intelligence ESLint plugin is integrated into the project's ESLint configuration. Hardcoded strings are flagged as warnings in:
+- VS Code Problems panel (squiggly underlines)
+- Terminal when running `pnpm lint`
+- CI/CD pipelines
+
+```javascript
+// Configured in eslint.config.mjs
+// Rule: @b-dashboard/i18n-intelligence/no-hardcoded-strings
+// Level: warn (non-blocking)
+// Excluded: test-detection/**, components/ui/**
+```
+
+**What gets flagged:**
+- JSX text content (e.g., `<Button>Click me</Button>`)
+- String attributes: `placeholder`, `title`, `alt`, `aria-label`
+
+**What is ignored:**
+- URLs, colors, CSS values, classNames
+- Code/Pre/Script components
+- Single characters, numbers, constants
+- Files in excluded patterns
+
+### Running the CLI Analyzer
 
 ```bash
 # Scan codebase for hardcoded strings
 pnpm analyze:i18n
 
+# Results saved to: .i18n-intelligence/hardcoded-strings.json
 # View results in Dev Tools dashboard
-```
-
-### ESLint Integration
-
-The custom ESLint plugin catches hardcoded strings during development:
-
-```javascript
-// eslint.config.mjs includes the plugin automatically
-// Warnings appear in VS Code Problems panel
 ```
 
 ### File Structure
@@ -411,10 +428,13 @@ The custom ESLint plugin catches hardcoded strings during development:
 ```
 lib/i18n-intelligence/
 ├── store/              # Zustand store for issue tracking
-├── detectors/          # Detection engine and interceptors  
+├── analyzers/          # Detection engine and interceptors  
 ├── utils/              # Export utilities (JSON, CSV, Markdown)
-├── eslint-plugin/      # Custom ESLint rule
-└── cli/                # CLI analyzer
+├── eslint/             # ESLint plugin (plugin.ts, analyzer.ts)
+└── types/              # TypeScript type definitions
+
+scripts/
+└── analyze-hardcoded-strings.ts  # CLI analyzer
 
 components/i18n-intelligence/
 ├── detection-controls.tsx    # Start/pause detection
@@ -423,7 +443,7 @@ components/i18n-intelligence/
 ├── issue-summary-cards.tsx   # Issue type breakdown
 ├── locale-health-cards.tsx   # Per-locale health
 ├── hardcoded-strings-panel.tsx # CLI analysis results
-└── dashboard.tsx             # Main dashboard layout
+└── index.ts                  # Barrel exports
 ```
 
 ### Extending i18n Intelligence

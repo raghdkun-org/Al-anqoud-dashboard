@@ -18,9 +18,11 @@ import {
   Trash2,
   Settings,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useI18nIntelligenceStore } from "@/lib/i18n-intelligence";
 
 export function DetectionControls() {
+  const t = useTranslations("devTools.i18n");
   const config = useI18nIntelligenceStore((s) => s.config);
   const isDetecting = useI18nIntelligenceStore((s) => s.isDetecting);
   const toggleDetection = useI18nIntelligenceStore((s) => s.toggleDetection);
@@ -65,9 +67,9 @@ export function DetectionControls() {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium">Detection Controls</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("controls.title")}</CardTitle>
           <Badge variant={isDetecting ? "default" : "secondary"}>
-            {isDetecting ? "Active" : "Paused"}
+            {isDetecting ? t("controls.active") : t("controls.paused")}
           </Badge>
         </div>
       </CardHeader>
@@ -75,9 +77,9 @@ export function DetectionControls() {
         {/* Main Toggle */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Detection Active</Label>
+            <Label>{t("controls.detectionActive")}</Label>
             <p className="text-xs text-muted-foreground">
-              Track translation issues in real-time
+              {t("controls.detectionHint")}
             </p>
           </div>
           <Button
@@ -87,11 +89,11 @@ export function DetectionControls() {
           >
             {isDetecting ? (
               <>
-                <Pause className="h-4 w-4 mr-1" /> Pause
+                <Pause className="h-4 w-4 me-1" /> {t("controls.pause")}
               </>
             ) : (
               <>
-                <Play className="h-4 w-4 mr-1" /> Start
+                <Play className="h-4 w-4 me-1" /> {t("controls.start")}
               </>
             )}
           </Button>
@@ -101,7 +103,7 @@ export function DetectionControls() {
         <div className="space-y-3 pt-2 border-t">
           <div className="flex items-center justify-between">
             <Label htmlFor="detect-missing" className="text-sm">
-              Missing Keys
+              {t("controls.missingKeys")}
             </Label>
             <Switch
               id="detect-missing"
@@ -114,7 +116,7 @@ export function DetectionControls() {
 
           <div className="flex items-center justify-between">
             <Label htmlFor="detect-fallback" className="text-sm">
-              Fallback Usage
+              {t("controls.fallbackUsage")}
             </Label>
             <Switch
               id="detect-fallback"
@@ -127,7 +129,7 @@ export function DetectionControls() {
 
           <div className="flex items-center justify-between">
             <Label htmlFor="detect-rtl" className="text-sm">
-              RTL Issues
+              {t("controls.rtlIssues")}
             </Label>
             <Switch
               id="detect-rtl"
@@ -142,16 +144,16 @@ export function DetectionControls() {
         {/* Actions */}
         <div className="flex flex-wrap gap-2 pt-2 border-t">
           <Button variant="outline" size="sm" onClick={recalculateHealth}>
-            <RotateCcw className="h-4 w-4 mr-1" />
-            Refresh
+            <RotateCcw className="h-4 w-4 me-1" />
+            {t("controls.refresh")}
           </Button>
           <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="h-4 w-4 mr-1" />
-            Export
+            <Download className="h-4 w-4 me-1" />
+            {t("controls.export")}
           </Button>
           <Button variant="outline" size="sm" onClick={handleImport}>
-            <Upload className="h-4 w-4 mr-1" />
-            Import
+            <Upload className="h-4 w-4 me-1" />
+            {t("controls.import")}
           </Button>
         </div>
 
@@ -163,7 +165,7 @@ export function DetectionControls() {
             onClick={clearResolvedIssues}
             className="text-yellow-600 hover:text-yellow-700"
           >
-            Clear Resolved
+            {t("controls.clearResolved")}
           </Button>
           <Button
             variant="outline"
@@ -171,19 +173,19 @@ export function DetectionControls() {
             onClick={clearAllIssues}
             className="text-orange-600 hover:text-orange-700"
           >
-            Clear All Issues
+            {t("controls.clearAll")}
           </Button>
           <Button
             variant="destructive"
             size="sm"
             onClick={() => {
-              if (confirm("Reset all data? This cannot be undone.")) {
+              if (confirm(t("controls.resetConfirm"))) {
                 reset();
               }
             }}
           >
-            <Trash2 className="h-4 w-4 mr-1" />
-            Reset
+            <Trash2 className="h-4 w-4 me-1" />
+            {t("controls.reset")}
           </Button>
         </div>
       </CardContent>

@@ -71,7 +71,7 @@ export default function LoginPage() {
             <Input
               id="email"
               type="email"
-              placeholder="admin@example.com"
+              placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
@@ -91,7 +91,7 @@ export default function LoginPage() {
             <Input
               id="password"
               type="password"
-              placeholder="password"
+              placeholder={t("passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
